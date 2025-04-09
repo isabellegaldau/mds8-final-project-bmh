@@ -11,7 +11,8 @@ import xgboost as xgb
 model = joblib.load("/workspaces/mds8-final-project-bmh/EDA/xgb_model_default_42.sav")
 model_columns = joblib.load("/workspaces/mds8-final-project-bmh/EDA/model_columns.pkl")
 
-print(model_columns)
+county_to_cities = joblib.load("/workspaces/mds8-final-project-bmh/EDA/county_to_cities.pkl")
+
 
 city_encoder = joblib.load("/workspaces/mds8-final-project-bmh/EDA/city_encoder.pkl")
 county_encoder = joblib.load("/workspaces/mds8-final-project-bmh/EDA/county_encoder.pkl")
@@ -20,9 +21,9 @@ property_encoder = joblib.load("/workspaces/mds8-final-project-bmh/EDA/propertyT
 
 
 # Title of the app
-st.title("Your Florida Homes' Price Prediction")
+st.title("Your Florida Top 25 Homes' Price Prediction")
 
-cat_cols = ['city', 'county', 'propertyType']
+
 
 
 city_to_zipcodes = {
@@ -193,16 +194,17 @@ city_to_zipcodes = {
 
 
 # Input fields for the user
-#zip_code = st.selectbox("Zip Code", city_to_zipcodes[city])
-latitude = st.number_input("Latitude", format="%.6f")
-longitude = st.number_input("Longitude", format="%.6f")
+county_label = st.selectbox("County", list(county_to_cities.keys()))
+city_label = st.selectbox("City", county_to_cities[county_label])
+zip_code = st.selectbox("Zip Code", city_to_zipcodes[city_label])
+#latitude = st.number_input("Latitude", format="%.6f")
+#longitude = st.number_input("Longitude", format="%.6f")
+property_type_label = st.selectbox("Property Type", list(property_encoder.classes_))
 bedrooms = st.number_input("Bedrooms", min_value=1, max_value=19, step=1)
 bathrooms = st.number_input("Bathrooms", min_value=1, max_value=8, step=1)
 square_footage = st.number_input("Square Footage", min_value=200, max_value=11615, step=10)
 lot_size = st.number_input("Lot Size (in sqft)", min_value=100, step=10)
 year_built = st.number_input("Year Built", min_value=1980, max_value=2025, step=1)
-#last_sale_price = st.number_input("Last Sale Price", min_value=900000, step=100)
-#m_rate = st.number_input("Mortgage Rate", min_value=0.01, max_value=900000, step=0.01)
 cooling_present = st.selectbox("Cooling Present", options=[0, 1])
 fireplace_present = st.selectbox("Fireplace Present", options=[0, 1])
 garage_present = st.selectbox("Garage Present", options=[0, 1])
@@ -210,14 +212,14 @@ heating_present = st.selectbox("Heating Present", options=[0, 1])
 pool_present = st.selectbox("Pool Present", options=[0, 1])
 floor_count = st.number_input("Floor Count", min_value=1, step=1)
 garage_spaces = st.number_input("Garage Spaces", min_value=0, step=1)
-city = st.selectbox("City", list(city_to_zipcodes.keys()))
-zip_code = st.selectbox("Zip Code", city_to_zipcodes[city])
-county_encoded = st.number_input("County Encoded", list(county_encoder.classes_))
-property_type_encoded = st.number_input("Property Type Encoded", list(property_encoder.classes_))
+#city_label = st.selectbox("City", list(city_encoder.classes_))
+#county_label = st.selectbox("County", list(county_encoder.classes_))
+#property_type_label = st.selectbox("Property Type", list(property_encoder.classes_))
+#zip_code = st.selectbox("Zip Code", city_to_zipcodes[city_label])
 
-city_encoded = city_encoder.transform([city])[0]
-county_encoded = county_encoder.transform([county_encoded])[0]
-property_type_encoded = property_encoder.transform([property_type_encoded])[0]
+city_encoded = city_encoder.transform([city_label])[0]
+county_encoded = county_encoder.transform([county_label])[0]
+property_type_encoded = property_encoder.transform([property_type_label])[0]
 
 # Create a DataFrame with the input values
 # input_data = pd.DataFrame({
@@ -246,15 +248,15 @@ property_type_encoded = property_encoder.transform([property_type_encoded])[0]
 
 input_data = pd.DataFrame([{
     'zipCode': zip_code,
-    'latitude': latitude,
-    'longitude': longitude,
+    'latitude': 0,
+    'longitude': 0,
     'bedrooms': bedrooms,
     'bathrooms': bathrooms,
     'squareFootage': square_footage,
     'lotSize': lot_size,
     'yearBuilt': year_built,
-    #'lastSalePrice': last_sale_price,
-    #'m_rate': m_rate,
+    'lastSalePrice': 0,       # placeholder
+    'm_rate': 0.0,
     'cooling_present': cooling_present,
     'fireplace_present': fireplace_present,
     'garage_present': garage_present,
@@ -266,6 +268,8 @@ input_data = pd.DataFrame([{
     'county_encoded': county_encoded,
     'propertyType_encoded': property_type_encoded
 }])
+# Match model columns (no get_dummies since this is all numeric)
+input_data = input_data[model_columns]
 
 #['zipCode', 'latitude', 'longitude', 'bedrooms', 'bathrooms', 'squareFootage', 'lotSize', 
 #'yearBuilt', 'lastSalePrice', 'm_rate', 'cooling_present', 'fireplace_present', 'garage_present', 
