@@ -6,17 +6,20 @@ import pickle
 from joblib import load
 from sklearn.preprocessing import LabelEncoder
 import xgboost as xgb
-
-# Load the pre-trained model
-model = joblib.load("/workspaces/mds8-final-project-bmh/EDA/xgb_model_default_42.sav")
-model_columns = joblib.load("/workspaces/mds8-final-project-bmh/EDA/model_columns.pkl")
-
-county_to_cities = joblib.load("/workspaces/mds8-final-project-bmh/EDA/county_to_cities.pkl")
+import joblib
 
 
-city_encoder = joblib.load("/workspaces/mds8-final-project-bmh/EDA/city_encoder.pkl")
-county_encoder = joblib.load("/workspaces/mds8-final-project-bmh/EDA/county_encoder.pkl")
-property_encoder = joblib.load("/workspaces/mds8-final-project-bmh/EDA/propertyType_encoder.pkl")
+model = joblib.load("xgb_model_default_42.sav")
+model_columns = joblib.load("model_columns.pkl")
+county_to_cities = joblib.load("county_to_cities.pkl")
+city_encoder = joblib.load("city_encoder.pkl")
+county_encoder = joblib.load("county_encoder.pkl")
+property_encoder = joblib.load("propertyType_encoder.pkl")
+
+
+
+
+
 
 
 
