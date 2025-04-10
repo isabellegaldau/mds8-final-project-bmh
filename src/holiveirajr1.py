@@ -10,23 +10,15 @@ import joblib
 
 
 model = joblib.load("xgb_model_default_42.sav")
-model_columns = joblib.load("model_columns.pkl")
+model_columns = joblib.load("/workspaces/mds8-final-project-bmh/EDA/model_columns.pkl")
 county_to_cities = joblib.load("county_to_cities.pkl")
 city_encoder = joblib.load("city_encoder.pkl")
 county_encoder = joblib.load("county_encoder.pkl")
 property_encoder = joblib.load("propertyType_encoder.pkl")
 
 
-
-
-
-
-
-
 # Title of the app
 st.title("Your Florida Top 25 Homes' Price Prediction")
-
-
 
 
 city_to_zipcodes = {
