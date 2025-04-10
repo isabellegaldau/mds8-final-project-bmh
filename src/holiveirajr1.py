@@ -1,13 +1,11 @@
-import streamlit as st
+import os
 import joblib
+import pickle
+import streamlit as st
 import numpy as np
 import pandas as pd
-import pickle
-from joblib import load
 from sklearn.preprocessing import LabelEncoder
 import xgboost as xgb
-import os
-
 
 # Base directory (i.e. where app.py lives)
 BASE_DIR = os.path.dirname(__file__)
@@ -16,17 +14,25 @@ BASE_DIR = os.path.dirname(__file__)
 def load_file(*path_parts):
     return os.path.join(BASE_DIR, *path_parts)
 
-# Load files from EDA folder
+# === Load files from EDA folder ===
 model_columns = joblib.load(load_file("..", "EDA", "model_columns.pkl"))
 xgb_model = joblib.load(load_file("..", "EDA", "xgb_model_default_42.sav"))
+county_to_cities = joblib.load(load_file("..", "EDA", "county_to_cities.pkl"))
+city_encoder = joblib.load(load_file("..", "EDA", "city_encoder.pkl"))
+county_encoder = joblib.load(load_file("..", "EDA", "county_encoder.pkl"))
+property_encoder = joblib.load(load_file("..", "EDA", "propertyType_encoder.pkl"))
 
-# Load files from src folder
+# === Load files from src folder ===
 city_zip_dict = joblib.load(load_file("city_zip_dict.sav"))
 decision_tree = joblib.load(load_file("decision_tree_regressor_default_42.sav"))
 matt_model = joblib.load(load_file("matt_xgbr_opt.sav"))
 model_cities = joblib.load(load_file("model_cities.sav"))
 model_columns_local = joblib.load(load_file("model_columns.sav"))
 zip_county_dict = joblib.load(load_file("zip_county_dict.sav"))
+
+# Use xgb_model as the model to predict
+model = xgb_model  # or change this line if you want a different one
+
 
 # Title of the app
 st.title("Your Florida Top 25 Homes' Price Prediction")
