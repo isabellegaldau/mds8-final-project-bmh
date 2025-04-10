@@ -6,16 +6,27 @@ import pickle
 from joblib import load
 from sklearn.preprocessing import LabelEncoder
 import xgboost as xgb
-import joblib
+import os
 
 
-model = joblib.load("xgb_model_default_42.sav")
-model_columns = joblib.load("/workspaces/mds8-final-project-bmh/EDA/model_columns.pkl")
-county_to_cities = joblib.load("county_to_cities.pkl")
-city_encoder = joblib.load("city_encoder.pkl")
-county_encoder = joblib.load("county_encoder.pkl")
-property_encoder = joblib.load("propertyType_encoder.pkl")
+# Base directory (i.e. where app.py lives)
+BASE_DIR = os.path.dirname(__file__)
 
+# Helper function to construct correct paths
+def load_file(*path_parts):
+    return os.path.join(BASE_DIR, *path_parts)
+
+# Load files from EDA folder
+model_columns = joblib.load(load_file("..", "EDA", "model_columns.pkl"))
+xgb_model = joblib.load(load_file("..", "EDA", "xgb_model_default_42.sav"))
+
+# Load files from src folder
+city_zip_dict = joblib.load(load_file("city_zip_dict.sav"))
+decision_tree = joblib.load(load_file("decision_tree_regressor_default_42.sav"))
+matt_model = joblib.load(load_file("matt_xgbr_opt.sav"))
+model_cities = joblib.load(load_file("model_cities.sav"))
+model_columns_local = joblib.load(load_file("model_columns.sav"))
+zip_county_dict = joblib.load(load_file("zip_county_dict.sav"))
 
 # Title of the app
 st.title("Your Florida Top 25 Homes' Price Prediction")
